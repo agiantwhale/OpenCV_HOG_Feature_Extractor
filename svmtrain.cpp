@@ -109,7 +109,7 @@ int main ( int argc, const char * argv[] ) {
   videos.insert(videos.end(), negative_training_sample_videos.begin(), negative_training_sample_videos.end());
 
   std::ofstream feature_data;
-  feature_data.open("feature.data", std::ios::out|std::ios::app);
+  feature_data.open(output_file.c_str(), std::ios::out|std::ios::app);
 
   std::vector<double> results;
   typedef std::vector<float> FeatureSet;
