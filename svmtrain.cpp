@@ -24,7 +24,7 @@
 #include <boost/foreach.hpp>
 
 const cv::Size kTrainingPadding = cv::Size(0, 0);
-const cv::Size kWinStride = cv::Size(60, 60);
+const cv::Size kWinStride = cv::Size(8,8);
 
 void CalculateFeaturesFromInput(const cv::Mat &image_data, std::vector<float>& feature_vector, cv::HOGDescriptor& hog) {
   if (image_data.empty()) {
