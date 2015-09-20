@@ -21,6 +21,16 @@
 #include <boost/program_options.hpp>
 #include <opencv2/opencv.hpp>
 
+void draw_locations(cv::Mat & img, const std::vector<cv::Rect> & locations, const cv::Scalar & color  ) {
+  if(!locations.empty()) {
+    std::vector<cv::Rect>::const_iterator loc = locations.begin();
+    std::vector<cv::Rect>::const_iterator end = locations.end();
+    for( ; loc != end ; ++loc  ) {
+      rectangle( img, *loc, color, 2  );
+    }
+  }
+}
+
 int main ( int argc, const char * argv[] ) {
   int width, height;
   std::string source_file;
@@ -81,39 +91,25 @@ int main ( int argc, const char * argv[] ) {
     return 1;
   }
 
-  cv::Mat img;
+  cv::Mat img, draw;
+  char key;
+  std::vector<cv::Rect> locations;
+  bool end_of_process = false;
+  while( !end_of_process )
+  {
+    cam >> img;
+    if(img.empty()) break;
 
-  while(cam.read(img)) {
-    std::vector<cv::Rect> found, found_filtered;
-    hog.detectMultiScale(img, found, 0, cv::Size(8,8), cv::Size(32,32), 1.05, 2);
+    draw = img.clone();
 
-    size_t i, j;
-    for (i=0; i<found.size(); i++) {
-      cv::Rect r = found[i];
-      for (j=0; j<found.size(); j++)
-        if (j!=i && (r & found[j])==r) break;
+    locations.clear();
+    hog.detectMultiScale( img, locations );
+    draw_locations( draw, locations, cv::Scalar(0, 0, 255));
 
-      if (j==found.size()) found_filtered.push_back(r);
-    }
-
-    for (i=0; i<found_filtered.size(); i++) {
-      cv::Rect r = found_filtered[i];
-      r.x += cvRound(r.width*0.1);
-      r.width = cvRound(r.width*0.8);
-      r.y += cvRound(r.height*0.06);
-      r.height = cvRound(r.height*0.9);
-      rectangle(img, r.tl(), r.br(), cv::Scalar(0,255,0), 2);
-    }
-
-    cv::Mat smaller_image;
-    cv::resize(img,smaller_image,cv::Size(640,480));
-
-    imshow("result", smaller_image);
-
-    if(cv::waitKey(30) >= 0) break;
+    imshow("cam", draw);
+    key = (char)cv::waitKey(10);
+    if(27 == key) end_of_process = true;
   }
-
-  cv::waitKey(0);
 
   return 0;
 }
