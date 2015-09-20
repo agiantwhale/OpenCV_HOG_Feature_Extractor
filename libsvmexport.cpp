@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   }
 
   std::ofstream result_data;
-  result_data.open(output_file, std::ofstream::out|std::ofstream::app);
+  result_data.open(output_file.c_str(), std::ofstream::out|std::ofstream::app);
 
   for(std::vector<float>::iterator iter=single_detector_vector.begin(); iter!=single_detector_vector.end(); iter++) {
     result_data << *iter << std::endl;
