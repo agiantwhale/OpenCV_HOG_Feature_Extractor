@@ -20,8 +20,10 @@
 #include <fstream>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
-#include "svmlight/svm_common.h"
-#include "svmlight/svm_learn.h"
+
+extern "C" {
+  #include "svmlight/svm_common.h"
+}
 
 int main(int argc, char** argv) {
   std::string source_file;
