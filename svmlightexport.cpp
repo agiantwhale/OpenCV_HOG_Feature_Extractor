@@ -20,7 +20,8 @@
 #include <fstream>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
-#include "libsvm/svm.h"
+#include "svmlight/svm_common.h"
+#include "svmlight/svm_learn.h"
 
 int main(int argc, char** argv) {
   std::string source_file;
@@ -59,24 +60,25 @@ int main(int argc, char** argv) {
   std::vector<float> single_detector_vector;
   std::vector<unsigned int> single_detector_vector_indices;
 
-  svm_model *model=svm_load_model(source_file.c_str());
+  char model_file[source_file.size()+1];
+  strcpy(model_file, source_file.c_str());
+  MODEL *model=read_model(model_file);
 
-  for (int ssv = 0; ssv < model->l; ++ssv) {
-    svm_node* single_support_vector = model->SV[ssv];
-    double alpha = model->sv_coef[0][ssv];
-    int single_vector_component = 0;
-    while (single_support_vector[single_vector_component].index != -1) {
-      if (ssv == 0) {
-        single_detector_vector.push_back(single_support_vector[single_vector_component].value * alpha);
-        single_detector_vector_indices.push_back(single_support_vector[single_vector_component].index); // Holds the indices for the corresponding values in single_detector_vector, mapping from single_vector_component to single_support_vector[single_vector_component].index!
-      } else {
-        if (single_vector_component > (int)single_detector_vector.size()) { // Catch oversized vectors (maybe from differently sized images?)
-          std::cerr << "Warning: Component " << single_vector_component << " out of range, should have the same size as other/first vector" << std::endl;
-        } else single_detector_vector.at(single_vector_component) += (single_support_vector[single_vector_component].value * alpha);
-      }
-      single_vector_component++;
+  DOC** supveclist = model->supvec;
+  single_detector_vector.clear();
+  single_detector_vector.resize(model->totwords, 0.);
+
+  for (long ssv = 1; ssv < model->sv_num; ++ssv) {
+    DOC* single_support_vector = supveclist[ssv];
+    SVECTOR* single_support_vector_values = single_support_vector->fvec;
+    WORD single_support_vector_component;
+    for (long singleFeature = 0; singleFeature < model->totwords; ++singleFeature) {
+      single_support_vector_component = single_support_vector_values->words[singleFeature];
+      single_detector_vector.at(single_support_vector_component.wnum-1) += (single_support_vector_component.weight * model->alpha[ssv]);
     }
   }
+
+  free_model(model,1);
 
   std::ofstream result_data;
   result_data.open(output_file, std::ofstream::out|std::ofstream::app);
@@ -84,6 +86,4 @@ int main(int argc, char** argv) {
   for(std::vector<float>::iterator iter=single_detector_vector.begin(); iter!=single_detector_vector.end(); iter++) {
     result_data << *iter << std::endl;
   }
-
-  svm_free_and_destroy_model(&model);
 }
