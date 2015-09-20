@@ -39,8 +39,8 @@ int main ( int argc, const char * argv[] ) {
     po::options_description desc("Options");
     desc.add_options()
     ("help,h", "Print help messages")
-    ("width,w", po::value<int>(&width)->default_value(384), "Specify train window width")
-    ("height,h", po::value<int>(&height)->default_value(216), "Specify train window height")
+    ("width,w", po::value<int>(&width)->default_value(128), "Specify train window width")
+    ("height,h", po::value<int>(&height)->default_value(72), "Specify train window height")
     ("source,o", po::value<std::string>(&source_file)->required(), "Specify an source file");
 
     po::positional_options_description p;

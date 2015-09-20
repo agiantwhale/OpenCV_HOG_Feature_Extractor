@@ -66,8 +66,8 @@ int main ( int argc, const char * argv[] ) {
     po::options_description desc("Options");
     desc.add_options()
     ("help,h", "Print help messages")
-    ("width,w", po::value<int>(&width)->default_value(384), "Specify train window width")
-    ("height,h", po::value<int>(&height)->default_value(216), "Specify train window height")
+    ("width,w", po::value<int>(&width)->default_value(128), "Specify train window width")
+    ("height,h", po::value<int>(&height)->default_value(72), "Specify train window height")
     ("positive,p", po::value<std::string>(&positive_source_directory)->default_value(boost::filesystem::current_path().string<std::string>()+"/positive"), "Specify positive video files directory")
     ("negative,n", po::value<std::string>(&negative_source_directory)->default_value(boost::filesystem::current_path().string<std::string>()+"/negative"), "Specify negative video files direcotry")
     ("output,o", po::value<std::string>(&output_file)->default_value(boost::filesystem::current_path().string<std::string>()+"/feature.data"), "Specify an output file");
