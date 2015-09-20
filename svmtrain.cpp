@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <opencv/cv.hpp>
+#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
@@ -55,8 +56,43 @@ void PopulateWithVideoPath(const std::string &folder_name, std::vector<std::stri
 }
 
 int main ( int argc, const char * argv[] ) {
+  int width, height;
+  std::string output_file;
+  std::string positive_source_directory;
+  std::string negative_source_directory;
+
+  try {
+    namespace po=boost::program_options;
+    po::options_description desc("Options");
+    desc.add_options()
+    ("help,h", "Print help messages")
+    ("width,w", po::value<int>(&width)->default_value(384), "Specify train window width")
+    ("height,h", po::value<int>(&height)->default_value(216), "Specify train window height")
+    ("positive,p", po::value<std::string>(&positive_source_directory)->default_value(boost::filesystem::current_path().string<std::string>()+"/positive"), "Specify positive video files directory")
+    ("negative,n", po::value<std::string>(&negative_source_directory)->default_value(boost::filesystem::current_path().string<std::string>()+"/negative"), "Specify negative video files direcotry")
+    ("output,o", po::value<std::string>(&output_file)->default_value(boost::filesystem::current_path().string<std::string>()+"/feature.data"), "Specify an output file");
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc,argv).options(desc).run(), vm);
+
+    if (vm.count("help")) {
+      std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
+      std::cout << desc;
+      return 0;
+    }
+
+    po::notify(vm);
+  }
+  catch(std::exception& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
+  catch(...) {
+    std::cerr << "Exception of unknown type!" << std::endl;
+    return 1;
+  }
   cv::HOGDescriptor hog;
-  hog.winSize=cv::Size(384, 216);
+  hog.winSize=cv::Size(width, height);
   // hog.blockSize=cv::Size(16,16);
   // hog.blockStride=cv::Size(8,8);
   // hog.cellSize=cv::Size(8,8);
@@ -110,8 +146,6 @@ int main ( int argc, const char * argv[] ) {
       std::cout << ++current_frame << " frames processed..." << std::endl;
     }
   }
-
-  feature_data.close();
 
   return 0;
 }
