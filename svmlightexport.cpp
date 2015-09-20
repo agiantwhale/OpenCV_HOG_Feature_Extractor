@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     po::options_description desc("Options");
     desc.add_options()
     ("help,h", "Print help messages")
-    ("source,o", po::value<std::string>(&source_file)->required(), "Specify an source file")
+    ("source,s", po::value<std::string>(&source_file)->required(), "Specify an source file")
     ("output,o", po::value<std::string>(&output_file)->default_value(boost::filesystem::current_path().string<std::string>()+"/detector.data"), "Specify an output file");
 
     po::positional_options_description p;
