@@ -7,8 +7,7 @@ find_package (Boost REQUIRED COMPONENTS filesystem system program_options)
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_library (svm libsvm/svm.cpp)
-add_library (svmlight_learn svmlight/svm_learn.c)
-add_library (svmlight_common svmlight/svm_common.c)
+add_library (svmlight svmlight/svm_hideo.c svmlight/svm_common.c svmlight/svm_learn.c)
 
 add_executable (svmtrain svmtrain.cpp)
 target_link_libraries (svmtrain ${OpenCV_LIBS} ${Boost_LIBRARIES})
@@ -17,7 +16,7 @@ add_executable (libsvmexport libsvmexport.cpp)
 target_link_libraries (libsvmexport svm ${OpenCV_LIBS} ${Boost_LIBRARIES})
 
 add_executable (svmlightexport svmlightexport.cpp)
-target_link_libraries (svmlightexport svmlight_common svmlight_learn  ${OpenCV_LIBS} ${Boost_LIBRARIES})
+target_link_libraries (svmlightexport svmlight ${OpenCV_LIBS} ${Boost_LIBRARIES})
 
 add_executable (svmdetector svmdetector.cpp)
 target_link_libraries (svmdetector ${OpenCV_LIBS} ${Boost_LIBRARIES})
