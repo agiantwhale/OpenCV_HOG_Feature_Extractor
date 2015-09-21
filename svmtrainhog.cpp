@@ -118,11 +118,11 @@ void load_images( const string & directory, vector< Mat > & img_lst, const Size 
       Mat cloned_img;
       resize(frame, cloned_img, size);
 #ifdef _DEBUG
-      imshow( "image", img );
+      imshow( "image", cloned_img );
       waitKey( 10 );
 #endif
       img_lst.push_back( cloned_img );
-      cout << "Processed " << ++frame_count << " frames." << endl;
+      cout << "Loaded " << ++frame_count << " frames." << endl;
     }
   }
 }
