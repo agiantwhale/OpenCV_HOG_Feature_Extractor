@@ -122,7 +122,7 @@ void load_images( const string & directory, vector< Mat > & img_lst, const Size 
       waitKey( 10 );
 #endif
       img_lst.push_back( cloned_img );
-      cout << "Processed " << ++frame_count << "frames." << endl;
+      cout << "Processed " << ++frame_count << " frames." << endl;
     }
   }
 }
