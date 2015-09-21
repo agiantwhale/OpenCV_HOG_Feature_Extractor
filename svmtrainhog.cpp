@@ -492,6 +492,12 @@ int main( int argc, char** argv )
   cout << "Training..." << endl;
   train_svm( gradient_lst, labels, output_file );
 
+  pos_lst.clear();
+  full_neg_lst.clear();
+  neg_lst.clear();
+  gradient_lst.clear();
+  labels.clear();
+
   cout << "Testing..." << endl;
   test_it( output_file, win_size );
 
