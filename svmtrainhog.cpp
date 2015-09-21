@@ -77,8 +77,7 @@ void convert_to_ml(const std::vector< cv::Mat > & train_samples, cv::Mat& trainD
     trainData = cv::Mat(rows, cols, CV_32FC1 );
     vector< Mat >::const_iterator itr = train_samples.begin();
     vector< Mat >::const_iterator end = train_samples.end();
-    for( int i = 0 ; itr != end ; ++itr, ++i )
-    {
+    for( int i = 0 ; itr != end ; ++itr, ++i ) {
         CV_Assert( itr->cols == 1 ||
             itr->rows == 1 );
         if( itr->cols == 1 )
@@ -386,19 +385,16 @@ void test_it( const string & output_file, const Size & size )
     Mat img, draw;
     Ptr<SVM> svm;
     HOGDescriptor hog;
-    HOGDescriptor my_hog;
-    my_hog.winSize = size;
+    hog.winSize = size;
     VideoCapture video;
     vector< Rect > locations;
 
     // Load the trained SVM.
     svm = StatModel::load<SVM>( output_file );
-    // Set the trained svm to my_hog
+    // Set the trained svm to hog
     vector< float > hog_detector;
     get_svm_detector( svm, hog_detector );
-    my_hog.setSVMDetector( hog_detector );
-    // Set the people detector.
-    hog.setSVMDetector( hog.getDefaultPeopleDetector() );
+    hog.setSVMDetector( hog_detector );
     // Open the camera.
     video.open(0);
     if( !video.isOpened() )
@@ -418,10 +414,6 @@ void test_it( const string & output_file, const Size & size )
 
         locations.clear();
         hog.detectMultiScale( img, locations );
-        draw_locations( draw, locations, reference );
-
-        locations.clear();
-        my_hog.detectMultiScale( img, locations );
         draw_locations( draw, locations, trained );
 
         imshow( "Video", draw );
@@ -433,6 +425,7 @@ void test_it( const string & output_file, const Size & size )
 
 int main( int argc, char** argv )
 {
+  bool test_only;
   int width, height;
   std::string output_file;
   std::string positive_source_directory;
@@ -443,8 +436,9 @@ int main( int argc, char** argv )
     po::options_description desc("Options");
     desc.add_options()
     ("help,h", "Print help messages")
-    ("width,w", po::value<int>(&width)->default_value(128), "Specify train window width")
-    ("height,h", po::value<int>(&height)->default_value(72), "Specify train window height")
+    ("test,t", po::value<bool>(&test_only)->default_value(false), "Specify whether to train")
+    ("width,w", po::value<int>(&width)->default_value(72), "Specify train window width")
+    ("height,h", po::value<int>(&height)->default_value(128), "Specify train window height")
     ("positive,p", po::value<std::string>(&positive_source_directory)->default_value(boost::filesystem::current_path().string<string>()+"/positive"), "Specify positive video files directory")
     ("negative,n", po::value<std::string>(&negative_source_directory)->default_value(boost::filesystem::current_path().string<string>()+"/negative"), "Specify negative video files direcotry")
     ("output,o", po::value<std::string>(&output_file)->default_value(boost::filesystem::current_path().string<string>()+"/feature.data"), "Specify an output file");
@@ -469,12 +463,14 @@ int main( int argc, char** argv )
     return 1;
   }
 
+  const Size win_size=Size(width,height);
+
+  if(!test_only) {
   vector< Mat > pos_lst;
   vector< Mat > full_neg_lst;
   vector< Mat > neg_lst;
   vector< Mat > gradient_lst;
   vector< int > labels;
-  const Size win_size=Size(width,height);
 
   load_images( positive_source_directory, pos_lst, win_size );
   labels.assign( pos_lst.size(), +1 );
@@ -497,6 +493,7 @@ int main( int argc, char** argv )
   neg_lst.clear();
   gradient_lst.clear();
   labels.clear();
+  }
 
   cout << "Testing..." << endl;
   test_it( output_file, win_size );
