@@ -133,28 +133,31 @@ void load_images( const string & directory, vector< Mat > & img_lst, const Size 
 
 void sample_neg( const vector< Mat > & full_neg_lst, vector< Mat > & neg_lst, const Size & size )
 {
-    Rect box;
-    box.width = size.width;
-    box.height = size.height;
+  Rect box;
+  box.width = size.width;
+  box.height = size.height;
 
-    const int size_x = box.width;
-    const int size_y = box.height;
+  const int size_x = box.width;
+  const int size_y = box.height;
 
-    srand( (unsigned int)time( NULL ) );
+  srand( (unsigned int)time( NULL ) );
 
-    vector< Mat >::const_iterator img = full_neg_lst.begin();
-    vector< Mat >::const_iterator end = full_neg_lst.end();
-    for( ; img != end ; ++img )
-    {
-        box.x = rand() % (img->cols - size_x);
-        box.y = rand() % (img->rows - size_y);
-        Mat roi = (*img)(box);
-        neg_lst.push_back( roi.clone() );
+  vector< Mat >::const_iterator img = full_neg_lst.begin();
+  vector< Mat >::const_iterator end = full_neg_lst.end();
+
+  int sampled_frames=0;
+  for( ; img != end ; ++img )
+  {
+    box.x = rand() % (img->cols - size_x);
+    box.y = rand() % (img->rows - size_y);
+    Mat roi = (*img)(box);
+    neg_lst.push_back( roi.clone() );
 #ifdef _DEBUG
-        imshow( "img", roi.clone() );
-        waitKey( 10 );
+    imshow( "img", roi.clone() );
+    waitKey( 10 );
 #endif
-    }
+    cout << "Sampled " << ++sampled_frames << " frames." << endl;
+  }
 }
 
 // From http://www.juergenwiki.de/work/wiki/doku.php?id=public:hog_descriptor_computation_and_visualization
