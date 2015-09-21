@@ -13,6 +13,9 @@ target_link_libraries (svmlight m)
 add_executable (svmtrain svmtrain.cpp)
 target_link_libraries (svmtrain ${OpenCV_LIBS} ${Boost_LIBRARIES})
 
+add_executable (svmtrainhog svmtrainhog.cpp)
+target_link_libraries (svmtrainhog ${OpenCV_LIBS} ${Boost_LIBRARIES})
+
 add_executable (libsvmexport libsvmexport.cpp)
 target_link_libraries (libsvmexport svm ${OpenCV_LIBS} ${Boost_LIBRARIES})
 

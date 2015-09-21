@@ -94,8 +94,8 @@ int main ( int argc, const char * argv[] ) {
   cv::Mat img, draw;
   char key;
   std::vector<cv::Rect> locations;
-  bool end_of_process = false;
-  while( !end_of_process )
+  bool end_of_process=false;
+  while(!end_of_process)
   {
     cam >> img;
     if(img.empty()) break;
@@ -103,12 +103,12 @@ int main ( int argc, const char * argv[] ) {
     draw = img.clone();
 
     locations.clear();
-    hog.detectMultiScale( img, locations );
+    hog.detectMultiScale( draw, locations );
     draw_locations( draw, locations, cv::Scalar(0, 0, 255));
 
     imshow("cam", draw);
     key = (char)cv::waitKey(10);
-    if(27 == key) end_of_process = true;
+    if(27==key) end_of_process = true;
   }
 
   return 0;
