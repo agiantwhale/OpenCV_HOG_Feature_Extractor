@@ -34,7 +34,7 @@ using namespace std;
 
 void get_svm_detector(const Ptr<SVM>& svm, vector< float > & hog_detector );
 void convert_to_ml(const std::vector< cv::Mat > & train_samples, cv::Mat& trainData );
-void load_images( const string & directory, vector< Mat > & img_lst, const Size & size);
+void load_images( const string & directory, vector< Mat > & img_lst, const Size & size=Size(0,0) );
 void sample_neg( const vector< Mat > & full_neg_lst, vector< Mat > & neg_lst, const Size & size );
 Mat get_hogdescriptor_visu(const Mat& color_origImg, vector<float>& descriptorValues, const Size & size );
 void compute_hog( const vector< Mat > & img_lst, vector< Mat > & gradient_lst, const Size & size );
@@ -115,8 +115,12 @@ void load_images( const string & directory, vector< Mat > & img_lst, const Size 
     cv::Mat frame;
     int frame_count=0;
     while(video.read(frame)) {
+      if(frame.empty()) break;
+
       Mat cloned_img;
-      resize(frame, cloned_img, size);
+      if(size.width==0||size.height==0) {
+        cloned_img=frame.clone();
+      } else resize(frame, cloned_img, size);
 #ifdef _DEBUG
       imshow( "image", cloned_img );
       waitKey( 10 );
@@ -472,7 +476,7 @@ int main( int argc, char** argv )
   load_images( positive_source_directory, pos_lst, win_size );
   labels.assign( pos_lst.size(), +1 );
   const unsigned int old = (unsigned int)labels.size();
-  load_images( negative_source_directory, full_neg_lst, win_size );
+  load_images( negative_source_directory, full_neg_lst );
   sample_neg( full_neg_lst, neg_lst, win_size );
   labels.insert( labels.end(), neg_lst.size(), -1 );
   CV_Assert( old < labels.size() );
