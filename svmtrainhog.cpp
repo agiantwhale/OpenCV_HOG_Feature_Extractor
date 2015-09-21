@@ -40,7 +40,7 @@ Mat get_hogdescriptor_visu(const Mat& color_origImg, vector<float>& descriptorVa
 void compute_hog( const vector< Mat > & img_lst, vector< Mat > & gradient_lst, const Size & size );
 void train_svm( const vector< Mat > & gradient_lst, const vector< int > & labels, const string & output_file );
 void draw_locations( Mat & img, const vector< Rect > & locations, const Scalar & color );
-void test_it( const string & output_file, const Size & size );
+void test_it( const string & output_file, int video_source, const Size & size );
 
 void get_svm_detector(const Ptr<SVM>& svm, vector< float > & hog_detector )
 {
@@ -377,7 +377,7 @@ void draw_locations( Mat & img, const vector< Rect > & locations, const Scalar &
     }
 }
 
-void test_it( const string & output_file, const Size & size )
+void test_it( const string & output_file, int video_source, const Size & size )
 {
     char key = 27;
     Scalar reference( 0, 255, 0 );
@@ -396,7 +396,7 @@ void test_it( const string & output_file, const Size & size )
     get_svm_detector( svm, hog_detector );
     hog.setSVMDetector( hog_detector );
     // Open the camera.
-    video.open(0);
+    video.open(1);
     if( !video.isOpened() )
     {
         cerr << "Unable to open the device 0" << endl;
@@ -426,7 +426,7 @@ void test_it( const string & output_file, const Size & size )
 int main( int argc, char** argv )
 {
   bool test_only;
-  int width, height;
+  int width, height, video_source;
   std::string output_file;
   std::string positive_source_directory;
   std::string negative_source_directory;
@@ -437,6 +437,7 @@ int main( int argc, char** argv )
     desc.add_options()
     ("help,h", "Print help messages")
     ("test,t", po::value<bool>(&test_only)->default_value(false), "Specify whether to train")
+    ("camera,c", po::value<int>(&video_source)->default_value(0), "Specify camera to retrieve test feed")
     ("width,w", po::value<int>(&width)->default_value(72), "Specify train window width")
     ("height,h", po::value<int>(&height)->default_value(128), "Specify train window height")
     ("positive,p", po::value<std::string>(&positive_source_directory)->default_value(boost::filesystem::current_path().string<string>()+"/positive"), "Specify positive video files directory")
@@ -496,7 +497,7 @@ int main( int argc, char** argv )
   }
 
   cout << "Testing..." << endl;
-  test_it( output_file, win_size );
+  test_it( output_file, video_source, win_size );
 
   return 0;
 }
