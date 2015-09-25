@@ -328,8 +328,7 @@ void compute_hog( const vector< Mat > & img_lst, vector< Mat > & gradient_lst, c
 
     vector< Mat >::const_iterator img = img_lst.begin();
     vector< Mat >::const_iterator end = img_lst.end();
-    for( ; img != end ; ++img )
-    {
+    for( ; img != end ; ++img ) {
         cvtColor( *img, gray, COLOR_BGR2GRAY );
         hog.compute( gray, descriptors, Size( 8, 8 ), Size( 0, 0 ), location );
         gradient_lst.push_back( Mat( descriptors ).clone() );
