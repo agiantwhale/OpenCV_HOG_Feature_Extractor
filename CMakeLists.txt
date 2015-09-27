@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.3)
 project (VideoTrainer)
 
-find_package (OpenCV REQUIRED)
+find_package (OpenCV 3.0 REQUIRED)
 find_package (Boost REQUIRED COMPONENTS filesystem system program_options)
 
 include_directories(${Boost_INCLUDE_DIRS})
